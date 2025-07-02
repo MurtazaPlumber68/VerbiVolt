@@ -10,6 +10,7 @@ import ShareLink from './components/ShareLink';
 import UndoRedo from './components/UndoRedo';
 import TextSummary from './components/TextSummary';
 import WordFrequency from './components/WordFrequency';
+import Analytics from './components/Analytics';
 
 export default function App() {
   const [text, rawSetText] = useState('');
@@ -28,7 +29,7 @@ export default function App() {
     return () => window.removeEventListener('loadSharedText', onLoad);
   }, []);
 
-  // Sync dark mode 
+  // Sync dark mode class
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
   }, [dark]);
@@ -104,7 +105,10 @@ export default function App() {
         {/* 10) Live Word Frequency */}
         <WordFrequency text={text} />
 
-        {/* 11) Preview */}
+        {/* 11) Analytics Dashboard */}
+        <Analytics text={text} />
+
+        {/* 12) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
