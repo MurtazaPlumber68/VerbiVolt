@@ -8,6 +8,7 @@ import UtilityButtons from './components/UtilityButtons';
 import DownloadText from './components/DownloadText';
 import UndoRedo from './components/UndoRedo';
 import TextSummary from './components/TextSummary';
+import WordFrequency from './components/WordFrequency';
 
 export default function App() {
   const [text, rawSetText] = useState('');
@@ -15,13 +16,13 @@ export default function App() {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [dark, setDark] = useState(false);
 
-  // Dark mode sync
+  // Sync dark mode class on <html>
   useEffect(() => {
     const root = document.documentElement;
     dark ? root.classList.add('dark') : root.classList.remove('dark');
   }, [dark]);
 
-  // Wrapper that records history
+  // Wrap setting text to record history
   const setText = (newText) => {
     const upToNow = history.slice(0, historyIndex + 1);
     const next = [...upToNow, newText];
@@ -72,7 +73,7 @@ export default function App() {
         {/* 5) Extra Utilities */}
         <UtilityButtons text={text} setText={setText} />
 
-        {/* 6) Download */}
+        {/* 6) Download as .txt */}
         <DownloadText text={text} />
 
         {/* 7) Undo / Redo */}
@@ -86,14 +87,15 @@ export default function App() {
         {/* 8) Text Summary */}
         <TextSummary text={text} />
 
-        {/* 9) Preview */}
+        {/* 9) Live Word Frequency */}
+        <WordFrequency text={text} />
+
+        {/* 10) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
           </h2>
-          <p className="dark:text-gray-300">
-            {text || 'Nothing to preview.'}
-          </p>
+          <p className="dark:text-gray-300">{text || 'Nothing to preview.'}</p>
         </div>
       </main>
     </div>
