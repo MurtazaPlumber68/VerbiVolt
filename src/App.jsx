@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import TextInput from './components/TextInput';
 import TransformButtons from './components/TransformButtons';
 import ClipboardActions from './components/ClipboardActions';
-import TextSummary from './components/TextSummary';
 import TextToSpeech from './components/TextToSpeech';
+import UtilityButtons from './components/UtilityButtons';
+import TextSummary from './components/TextSummary';
 
 export default function App() {
   const [text, setText] = useState('');
@@ -13,7 +14,8 @@ export default function App() {
   // Toggle the `dark` class on <html>
   useEffect(() => {
     const root = document.documentElement;
-    dark ? root.classList.add('dark') : root.classList.remove('dark');
+    if (dark) root.classList.add('dark');
+    else root.classList.remove('dark');
   }, [dark]);
 
   return (
@@ -38,12 +40,16 @@ export default function App() {
         {/* 3) Clipboard Actions */}
         <ClipboardActions text={text} setText={setText} />
 
+        {/* 4) Text-to-Speech */}
         <TextToSpeech text={text} />
 
-        {/* 4) Text Summary */}
+        {/* 5) Extra Utilities */}
+        <UtilityButtons text={text} setText={setText} />
+
+        {/* 6) Text Summary */}
         <TextSummary text={text} />
 
-        {/* 5) Preview */}
+        {/* 7) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
