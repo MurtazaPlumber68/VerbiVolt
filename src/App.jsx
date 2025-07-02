@@ -6,6 +6,7 @@ import ClipboardActions from './components/ClipboardActions';
 import TextToSpeech from './components/TextToSpeech';
 import UtilityButtons from './components/UtilityButtons';
 import DownloadText from './components/DownloadText';
+import ShareLink from './components/ShareLink';
 import UndoRedo from './components/UndoRedo';
 import TextSummary from './components/TextSummary';
 import WordFrequency from './components/WordFrequency';
@@ -16,13 +17,23 @@ export default function App() {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [dark, setDark] = useState(false);
 
-  // Sync dark mode class on <html>
+  // Load shared text via custom event
   useEffect(() => {
-    const root = document.documentElement;
-    dark ? root.classList.add('dark') : root.classList.remove('dark');
+    function onLoad(e) {
+      rawSetText(e.detail);
+      setHistory([e.detail]);
+      setHistoryIndex(0);
+    }
+    window.addEventListener('loadSharedText', onLoad);
+    return () => window.removeEventListener('loadSharedText', onLoad);
+  }, []);
+
+  // Sync dark mode 
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
   }, [dark]);
 
-  // Wrap setting text to record history
+  // Wrapper to setText & record history
   const setText = (newText) => {
     const upToNow = history.slice(0, historyIndex + 1);
     const next = [...upToNow, newText];
@@ -76,7 +87,10 @@ export default function App() {
         {/* 6) Download as .txt */}
         <DownloadText text={text} />
 
-        {/* 7) Undo / Redo */}
+        {/* 7) Shareable Link */}
+        <ShareLink text={text} />
+
+        {/* 8) Undo / Redo */}
         <UndoRedo
           canUndo={historyIndex > 0}
           canRedo={historyIndex < history.length - 1}
@@ -84,13 +98,13 @@ export default function App() {
           onRedo={handleRedo}
         />
 
-        {/* 8) Text Summary */}
+        {/* 9) Text Summary */}
         <TextSummary text={text} />
 
-        {/* 9) Live Word Frequency */}
+        {/* 10) Live Word Frequency */}
         <WordFrequency text={text} />
 
-        {/* 10) Preview */}
+        {/* 11) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
