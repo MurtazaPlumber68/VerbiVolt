@@ -5,46 +5,43 @@ import TransformButtons from './components/TransformButtons';
 import ClipboardActions from './components/ClipboardActions';
 import TextToSpeech from './components/TextToSpeech';
 import UtilityButtons from './components/UtilityButtons';
-import TextSummary from './components/TextSummary';
+import DownloadText from './components/DownloadText';
 import UndoRedo from './components/UndoRedo';
+import TextSummary from './components/TextSummary';
 
 export default function App() {
-  // core text state
   const [text, rawSetText] = useState('');
-  // history stack and pointer
   const [history, setHistory] = useState(['']);
   const [historyIndex, setHistoryIndex] = useState(0);
-  // dark mode
   const [dark, setDark] = useState(false);
 
-  // sync dark mode class
+  // Dark mode sync
   useEffect(() => {
     const root = document.documentElement;
     dark ? root.classList.add('dark') : root.classList.remove('dark');
   }, [dark]);
 
-  // wrapper to record changes
+  // Wrapper that records history
   const setText = (newText) => {
-    // prune redo history
     const upToNow = history.slice(0, historyIndex + 1);
-    const nextHistory = [...upToNow, newText];
-    setHistory(nextHistory);
-    setHistoryIndex(nextHistory.length - 1);
+    const next = [...upToNow, newText];
+    setHistory(next);
+    setHistoryIndex(next.length - 1);
     rawSetText(newText);
   };
 
   const handleUndo = () => {
     if (historyIndex === 0) return;
-    const newIndex = historyIndex - 1;
-    setHistoryIndex(newIndex);
-    rawSetText(history[newIndex]);
+    const idx = historyIndex - 1;
+    setHistoryIndex(idx);
+    rawSetText(history[idx]);
   };
 
   const handleRedo = () => {
     if (historyIndex === history.length - 1) return;
-    const newIndex = historyIndex + 1;
-    setHistoryIndex(newIndex);
-    rawSetText(history[newIndex]);
+    const idx = historyIndex + 1;
+    setHistoryIndex(idx);
+    rawSetText(history[idx]);
   };
 
   return (
@@ -75,7 +72,10 @@ export default function App() {
         {/* 5) Extra Utilities */}
         <UtilityButtons text={text} setText={setText} />
 
-        {/* 6) Undo / Redo */}
+        {/* 6) Download */}
+        <DownloadText text={text} />
+
+        {/* 7) Undo / Redo */}
         <UndoRedo
           canUndo={historyIndex > 0}
           canRedo={historyIndex < history.length - 1}
@@ -83,10 +83,10 @@ export default function App() {
           onRedo={handleRedo}
         />
 
-        {/* 7) Text Summary */}
+        {/* 8) Text Summary */}
         <TextSummary text={text} />
 
-        {/* 8) Preview */}
+        {/* 9) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
