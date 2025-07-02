@@ -4,6 +4,7 @@ import TextInput from './components/TextInput';
 import TransformButtons from './components/TransformButtons';
 import ClipboardActions from './components/ClipboardActions';
 import TextSummary from './components/TextSummary';
+import TextToSpeech from './components/TextToSpeech';
 
 export default function App() {
   const [text, setText] = useState('');
@@ -36,6 +37,8 @@ export default function App() {
 
         {/* 3) Clipboard Actions */}
         <ClipboardActions text={text} setText={setText} />
+
+        <TextToSpeech text={text} />
 
         {/* 4) Text Summary */}
         <TextSummary text={text} />
