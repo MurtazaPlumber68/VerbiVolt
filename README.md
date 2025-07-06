@@ -188,14 +188,5 @@ This project was built incrementally by layering features. Here's how it progres
 
 ---
 
-## License
+Made with ❤️ using React, Tailwind.
 
-MIT License
-
----
-
-Made with ❤️ using React, Tailwind, and persistence.
-
----
-
-> **Note:** This project originated from an interactive ChatGPT-guided build process. The entire app was built incrementally with feedback, testing, and debugging assistance from ChatGPT in real time.
