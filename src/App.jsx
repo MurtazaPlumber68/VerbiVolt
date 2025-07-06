@@ -6,6 +6,7 @@ import ClipboardActions from './components/ClipboardActions';
 import TextToSpeech from './components/TextToSpeech';
 import UtilityButtons from './components/UtilityButtons';
 import DownloadText from './components/DownloadText';
+import ExportPDF from './components/ExportPDF';
 import ShareLink from './components/ShareLink';
 import UndoRedo from './components/UndoRedo';
 import TextSummary from './components/TextSummary';
@@ -29,12 +30,12 @@ export default function App() {
     return () => window.removeEventListener('loadSharedText', onLoad);
   }, []);
 
-  // Sync dark mode class
+  // Sync dark mode class on <html>
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
   }, [dark]);
 
-  // Wrapper to setText & record history
+  // Wrap setText to record undo/redo history
   const setText = (newText) => {
     const upToNow = history.slice(0, historyIndex + 1);
     const next = [...upToNow, newText];
@@ -79,7 +80,7 @@ export default function App() {
         {/* 3) Clipboard Actions */}
         <ClipboardActions text={text} setText={setText} />
 
-        {/* 4) Text-to-Speech */}
+        {/* 4) Text‑to‑Speech */}
         <TextToSpeech text={text} />
 
         {/* 5) Extra Utilities */}
@@ -88,10 +89,13 @@ export default function App() {
         {/* 6) Download as .txt */}
         <DownloadText text={text} />
 
-        {/* 7) Shareable Link */}
+        {/* 7) Export as PDF */}
+        <ExportPDF text={text} />
+
+        {/* 8) Shareable Link */}
         <ShareLink text={text} />
 
-        {/* 8) Undo / Redo */}
+        {/* 9) Undo / Redo */}
         <UndoRedo
           canUndo={historyIndex > 0}
           canRedo={historyIndex < history.length - 1}
@@ -99,16 +103,16 @@ export default function App() {
           onRedo={handleRedo}
         />
 
-        {/* 9) Text Summary */}
+        {/* 10) Text Summary */}
         <TextSummary text={text} />
 
-        {/* 10) Live Word Frequency */}
+        {/* 11) Live Word Frequency */}
         <WordFrequency text={text} />
 
-        {/* 11) Analytics Dashboard */}
+        {/* 12) Analytics Dashboard */}
         <Analytics text={text} />
 
-        {/* 12) Preview */}
+        {/* 13) Preview */}
         <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
           <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
             Preview
