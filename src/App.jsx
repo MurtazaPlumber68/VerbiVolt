@@ -12,6 +12,7 @@ import UndoRedo from './components/UndoRedo';
 import TextSummary from './components/TextSummary';
 import WordFrequency from './components/WordFrequency';
 import Analytics from './components/Analytics';
+import Card from './components/Card';
 
 export default function App() {
   const [text, rawSetText] = useState('');
@@ -25,10 +26,11 @@ export default function App() {
 
   // Load shared text
   useEffect(() => {
-    function onLoad(e) {
+    const onLoad = e => {
       rawSetText(e.detail);
-      setHistory([e.detail]); setHistoryIndex(0);
-    }
+      setHistory([e.detail]);
+      setHistoryIndex(0);
+    };
     window.addEventListener('loadSharedText', onLoad);
     return () => window.removeEventListener('loadSharedText', onLoad);
   }, []);
@@ -39,94 +41,99 @@ export default function App() {
   }, [dark]);
 
   // Wrap setText for history
-  const setText = (newText) => {
+  const setText = newText => {
     const upToNow = history.slice(0, historyIndex + 1);
     const next = [...upToNow, newText];
-    setHistory(next); setHistoryIndex(next.length - 1);
+    setHistory(next);
+    setHistoryIndex(next.length - 1);
     rawSetText(newText);
   };
 
   const handleUndo = () => {
     if (historyIndex === 0) return;
     const idx = historyIndex - 1;
-    setHistoryIndex(idx); rawSetText(history[idx]);
+    setHistoryIndex(idx);
+    rawSetText(history[idx]);
   };
 
   const handleRedo = () => {
     if (historyIndex === history.length - 1) return;
     const idx = historyIndex + 1;
-    setHistoryIndex(idx); rawSetText(history[idx]);
+    setHistoryIndex(idx);
+    rawSetText(history[idx]);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 dark:bg-gray-900 dark:text-white">
-      <header className="max-w-3xl mx-auto flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">VerbiVolt</h1>
+    <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900 dark:text-white">
+      <header className="flex justify-between items-center mb-8 container mx-auto px-4">
+        <h1 className="text-4xl font-extrabold">VerbiVolt</h1>
         <button
           onClick={() => setDark(d => !d)}
-          className="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700"
+          className="btn btn-secondary"
         >
           {dark ? 'Light Mode' : 'Dark Mode'}
         </button>
       </header>
 
-      <main className="max-w-3xl mx-auto">
-        {/* SETTINGS */}
-        <Settings
-          ttsRate={ttsRate}
-          setTtsRate={setTtsRate}
-          autoCopy={autoCopy}
-          setAutoCopy={setAutoCopy}
-        />
+      <main className="container mx-auto px-4 space-y-6">
+        <Card title="Settings">
+          <Settings
+            ttsRate={ttsRate}
+            setTtsRate={setTtsRate}
+            autoCopy={autoCopy}
+            setAutoCopy={setAutoCopy}
+          />
+        </Card>
 
-        {/* 1) Text Input */}
-        <TextInput text={text} setText={setText} />
+        <Card title="Input">
+          <TextInput text={text} setText={setText} />
+        </Card>
 
-        {/* 2) Transformation Buttons */}
-        <TransformButtons text={text} setText={setText} autoCopy={autoCopy} />
+        <Card title="Transform">
+          <TransformButtons
+            text={text}
+            setText={setText}
+            autoCopy={autoCopy}
+          />
+        </Card>
 
-        {/* 3) Clipboard Actions */}
-        <ClipboardActions text={text} setText={setText} />
+        <Card title="Actions">
+          <div className="flex flex-wrap gap-4">
+            <ClipboardActions text={text} setText={setText} />
+            <TextToSpeech text={text} rate={ttsRate} />
+          </div>
+        </Card>
 
-        {/* 4) Text‑to‑Speech */}
-        <TextToSpeech text={text} rate={ttsRate} />
+        <Card title="Utilities">
+          <UtilityButtons text={text} setText={setText} />
+        </Card>
 
-        {/* 5) Extra Utilities */}
-        <UtilityButtons text={text} setText={setText} />
+        <Card title="Export & Share">
+          <div className="flex flex-wrap gap-4">
+            <DownloadText text={text} />
+            <ExportPDF text={text} />
+            <ShareLink text={text} />
+          </div>
+        </Card>
 
-        {/* 6) Download as .txt */}
-        <DownloadText text={text} />
+        <Card title="History">
+          <UndoRedo
+            canUndo={historyIndex > 0}
+            canRedo={historyIndex < history.length - 1}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+          />
+        </Card>
 
-        {/* 7) Export as PDF */}
-        <ExportPDF text={text} />
+        <Card title="Analysis">
+          <TextSummary text={text} />
+          <WordFrequency text={text} />
+          <Analytics text={text} />
+        </Card>
 
-        {/* 8) Shareable Link */}
-        <ShareLink text={text} />
-
-        {/* 9) Undo / Redo */}
-        <UndoRedo
-          canUndo={historyIndex > 0}
-          canRedo={historyIndex < history.length - 1}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-        />
-
-        {/* 10) Text Summary */}
-        <TextSummary text={text} />
-
-        {/* 11) Live Word Frequency */}
-        <WordFrequency text={text} />
-
-        {/* 12) Analytics Dashboard */}
-        <Analytics text={text} />
-
-        {/* 13) Preview */}
-        <div className="mt-6 p-4 bg-white rounded shadow dark:bg-gray-800">
-          <h2 className="text-2xl font-semibold mb-2 dark:text-gray-200">
-            Preview
-          </h2>
-          <p className="dark:text-gray-300">{text || 'Nothing to preview.'}</p>
-        </div>
+        <Card title="Preview">
+          <p>{text || 'Nothing to preview.'}</p>
+        </Card>
       </main>
     </div>
   );
