@@ -1,17 +1,28 @@
 import React from 'react';
 
-export default function TransformButtons({ text, setText }) {
-  const toUpper = () => setText(text.toUpperCase());
-  const toLower = () => setText(text.toLowerCase());
+export default function TransformButtons({ text, setText, autoCopy }) {
+  // Helper to apply a transform and optionally copy
+  const apply = (newText) => {
+    setText(newText);
+    if (autoCopy) {
+      navigator.clipboard.writeText(newText).catch(() => {
+        /* ignore errors */ 
+      });
+    }
+  };
+
+  const toUpper = () => apply(text.toUpperCase());
+  const toLower = () => apply(text.toLowerCase());
   const toSentence = () => {
     const sentences = text.split(/([.!?]\s*)/);
     const transformed = sentences
       .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
       .join('');
-    setText(transformed);
+    apply(transformed);
   };
-  const toBase64 = () => setText(btoa(text));
-  const reverseText = () => setText([...text].reverse().join(''));
+  const toBase64 = () => apply(btoa(text));
+  const reverseText = () => apply([...text].reverse().join(''));
+  const clearText = () => apply('');
 
   const btnBase = 'px-3 py-1 rounded text-white hover:opacity-90 transition';
   const primary = 'bg-blue-500 dark:bg-blue-600';
@@ -31,7 +42,7 @@ export default function TransformButtons({ text, setText }) {
       <button onClick={toBase64} className={`${btnBase} ${primary}`}>
         Encode to Base64
       </button>
-      <button onClick={() => setText('')} className={`${btnBase} ${neutral}`}>
+      <button onClick={clearText} className={`${btnBase} ${neutral}`}>
         Clear Text
       </button>
       <button onClick={reverseText} className={`${btnBase} ${primary}`}>

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
-export default function TextToSpeech({ text }) {
+export default function TextToSpeech({ text, rate = 1 }) {
   const [speaking, setSpeaking] = useState(false);
 
   const handleSpeak = () => {
     if (!text) return alert('Nothing to speak!');
     const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = rate;
     utterance.onstart = () => setSpeaking(true);
     utterance.onend = () => setSpeaking(false);
     speechSynthesis.speak(utterance);

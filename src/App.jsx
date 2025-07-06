@@ -1,5 +1,5 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
+import Settings from './components/Settings';
 import TextInput from './components/TextInput';
 import TransformButtons from './components/TransformButtons';
 import ClipboardActions from './components/ClipboardActions';
@@ -19,43 +19,43 @@ export default function App() {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [dark, setDark] = useState(false);
 
-  // Load shared text via custom event
+  // NEW SETTINGS STATE:
+  const [ttsRate, setTtsRate] = useState(1.0);
+  const [autoCopy, setAutoCopy] = useState(false);
+
+  // Load shared text
   useEffect(() => {
     function onLoad(e) {
       rawSetText(e.detail);
-      setHistory([e.detail]);
-      setHistoryIndex(0);
+      setHistory([e.detail]); setHistoryIndex(0);
     }
     window.addEventListener('loadSharedText', onLoad);
     return () => window.removeEventListener('loadSharedText', onLoad);
   }, []);
 
-  // Sync dark mode class on <html>
+  // Dark mode sync
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
   }, [dark]);
 
-  // Wrap setText to record undo/redo history
+  // Wrap setText for history
   const setText = (newText) => {
     const upToNow = history.slice(0, historyIndex + 1);
     const next = [...upToNow, newText];
-    setHistory(next);
-    setHistoryIndex(next.length - 1);
+    setHistory(next); setHistoryIndex(next.length - 1);
     rawSetText(newText);
   };
 
   const handleUndo = () => {
     if (historyIndex === 0) return;
     const idx = historyIndex - 1;
-    setHistoryIndex(idx);
-    rawSetText(history[idx]);
+    setHistoryIndex(idx); rawSetText(history[idx]);
   };
 
   const handleRedo = () => {
     if (historyIndex === history.length - 1) return;
     const idx = historyIndex + 1;
-    setHistoryIndex(idx);
-    rawSetText(history[idx]);
+    setHistoryIndex(idx); rawSetText(history[idx]);
   };
 
   return (
@@ -71,17 +71,25 @@ export default function App() {
       </header>
 
       <main className="max-w-3xl mx-auto">
+        {/* SETTINGS */}
+        <Settings
+          ttsRate={ttsRate}
+          setTtsRate={setTtsRate}
+          autoCopy={autoCopy}
+          setAutoCopy={setAutoCopy}
+        />
+
         {/* 1) Text Input */}
         <TextInput text={text} setText={setText} />
 
         {/* 2) Transformation Buttons */}
-        <TransformButtons text={text} setText={setText} />
+        <TransformButtons text={text} setText={setText} autoCopy={autoCopy} />
 
         {/* 3) Clipboard Actions */}
         <ClipboardActions text={text} setText={setText} />
 
         {/* 4) Text‑to‑Speech */}
-        <TextToSpeech text={text} />
+        <TextToSpeech text={text} rate={ttsRate} />
 
         {/* 5) Extra Utilities */}
         <UtilityButtons text={text} setText={setText} />
