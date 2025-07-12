@@ -37,7 +37,7 @@ export default function App() {
 
   // Dark mode sync
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
+    document.body.classList.toggle('dark', dark);
   }, [dark]);
 
   // Wrap setText for history
