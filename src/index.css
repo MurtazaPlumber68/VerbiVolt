@@ -244,84 +244,130 @@ body.dark .card h2 {
   animation: underlineGlow 2s ease-in-out infinite alternate;
 }
 
-/* ===== UNIVERSAL BUTTON BASE STYLES ===== */
+/* —————————————————————————————————————— */
+/* Universal Button Reset & Micro‑Interactions */
+/* —————————————————————————————————————— */
 .btn, button {
   padding: 0.75rem 1.5rem;
   border-radius: var(--border-radius-small);
   font-weight: 600;
   font-size: 0.875rem;
-  border: 1px solid var(--border-color);
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all var(--duration-medium) cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  
+  /* Base state - always defined */
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border: 1px solid var(--border-color);
   background: var(--bg-glass);
   color: var(--text-primary);
   box-shadow: 0 2px 8px var(--shadow-light);
+  transition: transform var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease,
+              color var(--duration-medium) ease;
 }
 
-/* Universal Button Hover State */
-.btn:hover, button:hover {
-  transform: translateY(-2px) scale(var(--hover-scale));
-  box-shadow: 0 8px 25px var(--shadow-medium);
-  background: var(--accent-1);
-  color: white;
-  border-color: var(--accent-1);
-}
-
-/* Universal Button Active State with Ripple */
-.btn:active, button:active {
-  transform: translateY(-1px) scale(var(--active-scale));
-  transition: transform var(--duration-fast) ease;
-}
-
-.btn:active::before, button:active::before {
+/* Define pseudo-elements in base state to prevent jumps */
+.btn::before,
+.btn::after,
+button::before,
+button::after {
   content: '';
   position: absolute;
-  top: 50%;
+  pointer-events: none;
+}
+
+/* Ripple effect - always defined, triggered on active */
+.btn::before,
+button::before {
+  top: 50%; 
   left: 50%;
-  width: 0;
+  width: 0; 
   height: 0;
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  animation: rippleEffect 0.6s ease-out;
+  z-index: 1;
+  opacity: 0;
 }
 
-/* Universal Button Focus State */
-.btn:focus-visible, button:focus-visible {
-  outline: 2px solid var(--accent-2);
-  outline-offset: 2px;
-  box-shadow: 
-    0 0 0 4px rgba(251, 191, 36, 0.3),
+.btn:active::before,
+button:active::before {
+  animation: ripple 0.6s ease-out forwards;
+}
+
+/* Hover fill - slides in from left */
+.btn::after,
+button::after {
+  top: 0; 
+  left: -100%;
+  width: 100%; 
+  height: 100%;
+  background: var(--accent-1);
+  z-index: 0;
+  transition: left var(--duration-medium) ease;
+}
+
+.btn:hover,
+button:hover {
+  transform: translateY(-2px) scale(var(--hover-scale));
+  color: white;
+  box-shadow: 0 8px 25px var(--shadow-medium);
+}
+
+.btn:hover::after,
+button:hover::after {
+  left: 0;
+}
+
+/* Active state */
+.btn:active,
+button:active {
+  transform: translateY(-1px) scale(var(--active-scale));
+  transition: transform var(--duration-fast) ease;
+}
+
+/* Focus state - clean glow without jumps */
+.btn:focus-visible,
+button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--accent-2),
+    0 0 10px rgba(251, 191, 36, 0.4),
     0 8px 25px var(--shadow-medium);
   animation: focusPulse 2s ease-in-out infinite;
 }
 
 /* Dark Mode Button Styles */
-body.dark .btn, body.dark button {
+body.dark .btn, 
+body.dark button {
   background: var(--dark-bg-glass);
   color: var(--dark-text-primary);
   border-color: var(--dark-border-color);
   box-shadow: 0 2px 8px var(--dark-shadow-light);
 }
 
-body.dark .btn:hover, body.dark button:hover {
+body.dark .btn::after,
+body.dark button::after {
   background: var(--accent-1-light);
-  border-color: var(--accent-1-light);
+}
+
+body.dark .btn:hover, 
+body.dark button:hover {
   box-shadow: 0 8px 25px var(--dark-shadow-medium);
 }
 
-body.dark .btn:focus-visible, body.dark button:focus-visible {
-  outline-color: var(--accent-2-light);
-  box-shadow: 
-    0 0 0 4px rgba(252, 211, 77, 0.4),
+body.dark .btn:focus-visible, 
+body.dark button:focus-visible {
+  box-shadow:
+    0 0 0 3px var(--accent-2-light),
+    0 0 10px rgba(252, 211, 77, 0.4),
     0 8px 25px var(--dark-shadow-medium);
 }
 
@@ -333,13 +379,14 @@ header .btn {
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 16px var(--shadow-light);
-  transition: all var(--duration-medium) ease;
+}
+
+header .btn::after {
+  background: var(--gradient-primary);
 }
 
 header .btn:hover {
-  background: var(--gradient-primary);
   color: white;
-  border-color: transparent;
   transform: translateY(-3px) scale(1.05);
 }
 
@@ -350,113 +397,44 @@ body.dark header .btn {
   box-shadow: 0 4px 16px var(--dark-shadow-light);
 }
 
-body.dark header .btn:hover {
+body.dark header .btn::after {
   background: var(--gradient-secondary);
-  color: white;
 }
 
-/* Transform Buttons - Ripple Effect with Gradient Fill */
-.card:nth-child(3) .btn, .card:nth-child(3) button {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  border: 1px solid var(--accent-1);
-  position: relative;
-  overflow: hidden;
+/* Transform Buttons - Enhanced ripple with gradient */
+.card:nth-child(3) .btn::before, 
+.card:nth-child(3) button::before {
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(45,212,191,0.6) 100%);
 }
 
-.card:nth-child(3) .btn::after, .card:nth-child(3) button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
+.card:nth-child(3) .btn::after, 
+.card:nth-child(3) button::after {
   background: var(--gradient-primary);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.4s ease, height 0.4s ease;
-  z-index: -1;
 }
 
-.card:nth-child(3) .btn:hover, .card:nth-child(3) button:hover {
-  color: white;
-  border-color: var(--accent-1);
-  background: transparent;
-}
-
-.card:nth-child(3) .btn:hover::after, .card:nth-child(3) button:hover::after {
-  width: 300px;
-  height: 300px;
-}
-
-.card:nth-child(3) .btn:active::after, .card:nth-child(3) button:active::after {
-  width: 350px;
-  height: 350px;
-  transition: width 0.1s ease, height 0.1s ease;
-}
-
-body.dark .card:nth-child(3) .btn, body.dark .card:nth-child(3) button {
-  border-color: var(--accent-1-light);
-}
-
-body.dark .card:nth-child(3) .btn:hover, body.dark .card:nth-child(3) button:hover {
-  border-color: var(--accent-1-light);
-}
-
-/* Utility Buttons - Left-to-Right Color Fill */
-.card:nth-child(6) .btn, .card:nth-child(6) button {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  border: 1px solid var(--accent-2);
-  position: relative;
-  overflow: hidden;
-}
-
-.card:nth-child(6) .btn::before, .card:nth-child(6) button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+/* Utility Buttons - Amber accent */
+.card:nth-child(6) .btn::after, 
+.card:nth-child(6) button::after {
   background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
-  transition: left var(--duration-medium) ease;
-  z-index: -1;
 }
 
-.card:nth-child(6) .btn:hover, .card:nth-child(6) button:hover {
-  color: white;
-  border-color: var(--accent-2);
-  background: transparent;
-}
-
-.card:nth-child(6) .btn:hover::before, .card:nth-child(6) button:hover::before {
-  left: 0;
-}
-
-body.dark .card:nth-child(6) .btn, body.dark .card:nth-child(6) button {
-  border-color: var(--accent-2-light);
-}
-
-body.dark .card:nth-child(6) .btn::before, body.dark .card:nth-child(6) button::before {
+body.dark .card:nth-child(6) .btn::after, 
+body.dark .card:nth-child(6) button::after {
   background: linear-gradient(135deg, var(--accent-2-light), var(--accent-3-light));
 }
 
-body.dark .card:nth-child(6) .btn:hover, body.dark .card:nth-child(6) button:hover {
-  border-color: var(--accent-2-light);
-}
-
-/* Export & Share Buttons - Underline Sweep */
-.card:nth-child(7) .btn, .card:nth-child(7) button {
+/* Export & Share Buttons - Indigo accent with underline */
+.card:nth-child(7) .btn, 
+.card:nth-child(7) button {
   background: transparent;
   color: var(--accent-3);
   border: 2px solid var(--accent-3);
   position: relative;
 }
 
-.card:nth-child(7) .btn::after, .card:nth-child(7) button::after {
-  content: '';
-  position: absolute;
+.card:nth-child(7) .btn::after, 
+.card:nth-child(7) button::after {
+  top: auto;
   bottom: 0;
   left: 0;
   width: 0;
@@ -465,27 +443,32 @@ body.dark .card:nth-child(6) .btn:hover, body.dark .card:nth-child(6) button:hov
   transition: width var(--duration-medium) ease;
 }
 
-.card:nth-child(7) .btn:hover, .card:nth-child(7) button:hover {
+.card:nth-child(7) .btn:hover, 
+.card:nth-child(7) button:hover {
   background: var(--accent-3);
   color: white;
   transform: translateY(-3px) scale(var(--hover-scale));
 }
 
-.card:nth-child(7) .btn:hover::after, .card:nth-child(7) button:hover::after {
+.card:nth-child(7) .btn:hover::after, 
+.card:nth-child(7) button:hover::after {
   width: 100%;
 }
 
-body.dark .card:nth-child(7) .btn, body.dark .card:nth-child(7) button {
+body.dark .card:nth-child(7) .btn, 
+body.dark .card:nth-child(7) button {
   color: var(--accent-3-light);
   border-color: var(--accent-3-light);
 }
 
-body.dark .card:nth-child(7) .btn:hover, body.dark .card:nth-child(7) button:hover {
+body.dark .card:nth-child(7) .btn:hover, 
+body.dark .card:nth-child(7) button:hover {
   background: var(--accent-3-light);
 }
 
-/* History Buttons - Slide Animation */
-.card:nth-child(8) .btn, .card:nth-child(8) button {
+/* History Buttons - Slide animation */
+.card:nth-child(8) .btn, 
+.card:nth-child(8) button {
   background: var(--bg-glass);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
@@ -494,24 +477,31 @@ body.dark .card:nth-child(7) .btn:hover, body.dark .card:nth-child(7) button:hov
   animation: slideInFade var(--duration-medium) ease forwards;
 }
 
-.card:nth-child(8) .btn:nth-child(2), .card:nth-child(8) button:nth-child(2) {
+.card:nth-child(8) .btn:nth-child(2), 
+.card:nth-child(8) button:nth-child(2) {
   animation-delay: 0.1s;
 }
 
-.card:nth-child(8) .btn:disabled, .card:nth-child(8) button:disabled {
+.card:nth-child(8) .btn:disabled, 
+.card:nth-child(8) button:disabled {
   opacity: 0.3;
   transform: translateX(-20px);
   animation: slideOutFade var(--duration-medium) ease forwards;
   cursor: not-allowed;
 }
 
-.card:nth-child(8) .btn:not(:disabled):hover, .card:nth-child(8) button:not(:disabled):hover {
+.card:nth-child(8) .btn:not(:disabled)::after, 
+.card:nth-child(8) button:not(:disabled)::after {
   background: var(--gradient-secondary);
-  color: white;
-  border-color: transparent;
 }
 
-body.dark .card:nth-child(8) .btn, body.dark .card:nth-child(8) button {
+.card:nth-child(8) .btn:not(:disabled):hover, 
+.card:nth-child(8) button:not(:disabled):hover {
+  color: white;
+}
+
+body.dark .card:nth-child(8) .btn, 
+body.dark .card:nth-child(8) button {
   background: var(--dark-bg-glass);
   color: var(--dark-text-secondary);
   border-color: var(--dark-border-color);
@@ -688,11 +678,12 @@ body.dark .form-checkbox:checked {
   }
 }
 
-@keyframes rippleEffect {
+/* Bulletproof ripple animation */
+@keyframes ripple {
   0% {
     width: 0;
     height: 0;
-    opacity: 1;
+    opacity: 0.6;
   }
   100% {
     width: 300px;
@@ -704,17 +695,20 @@ body.dark .form-checkbox:checked {
 @keyframes focusPulse {
   0% {
     box-shadow: 
-      0 0 0 4px rgba(251, 191, 36, 0.3),
+      0 0 0 3px var(--accent-2),
+      0 0 10px rgba(251, 191, 36, 0.4),
       0 8px 25px var(--shadow-medium);
   }
   50% {
     box-shadow: 
-      0 0 0 6px rgba(251, 191, 36, 0.2),
+      0 0 0 5px var(--accent-2),
+      0 0 15px rgba(251, 191, 36, 0.6),
       0 12px 35px var(--shadow-heavy);
   }
   100% {
     box-shadow: 
-      0 0 0 4px rgba(251, 191, 36, 0.3),
+      0 0 0 3px var(--accent-2),
+      0 0 10px rgba(251, 191, 36, 0.4),
       0 8px 25px var(--shadow-medium);
   }
 }
