@@ -270,6 +270,7 @@ body.dark .card h2 {
   transition: transform var(--duration-fast) ease,
               box-shadow var(--duration-fast) ease,
               color var(--duration-medium) ease;
+  z-index: 10; /* Create stacking context for text content */
 }
 
 /* Define pseudo-elements in base state to prevent jumps */
@@ -292,7 +293,7 @@ button::before {
   background: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 2; /* Above hover fill, below text */
   opacity: 0;
 }
 
@@ -309,7 +310,7 @@ button::after {
   width: 100%; 
   height: 100%;
   background: var(--accent-1);
-  z-index: 1;
+  z-index: 1; /* Behind everything */
   transition: left var(--duration-medium) ease;
 }
 
@@ -318,8 +319,7 @@ button:hover {
   transform: translateY(-2px) scale(var(--hover-scale));
   color: white;
   box-shadow: 0 8px 25px var(--shadow-medium);
-  position: relative;
-  z-index: 3;
+  /* Text content inherits z-index: 10 from parent */
 }
 
 .btn:hover::after,
